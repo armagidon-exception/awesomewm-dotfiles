@@ -1,0 +1,6 @@
+{
+    "workspace.library": [
+        "/usr/share/awesome/lib/"
+    ],
+    "runtime.pathStrict": true
+}
