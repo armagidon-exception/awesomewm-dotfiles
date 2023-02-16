@@ -24,6 +24,18 @@ local center_widget = place_widget('center')
 local left_widget = place_widget('left')
 local right_widget = place_widget('right')
 
+local function sub_bar(widgets)
+    return wibox.widget {
+        widget = wibox.container.background,
+        bg = beautiful.submenu_bg,
+        gears.table.join({
+            spacing = beautiful.widget_spacing,
+            layout = wibox.layout.fixed.horizontal,
+        }, widgets)
+    }
+end
+
+
 local function setup_wibar(screen)
     local taglist = awful.widget.taglist {
         screen = screen,
@@ -31,29 +43,15 @@ local function setup_wibar(screen)
     }
 
     local topbar = awful.wibar { position = 'top', screen = screen, shape = gears.shape.rounded_bar}
-    topbar:setup {
-        {
-            widget = wibox.container.background,
-            bg = beautiful.submenu_bg,
-            {
-                layout = wibox.layout.fixed.horizontal,
-            }
-        },
+    topbar : setup {
+        left_widget(sub_bar(desktop_widgets.left)),
         center_widget(taglist),
-        right_widget({
-            widget = wibox.container.background,
-            bg = beautiful.submenu_bg,
-            gears.table.join({
-                spacing = beautiful.widget_spacing,
-                layout = wibox.layout.fixed.horizontal,
-            }, desktop_widgets.left)
-        }),
+        right_widget(sub_bar(desktop_widgets.right)),
         expand = true,
         forced_num_cols = 3,
         homogeneous = true,
         forced_num_rows = 1,
         layout = wibox.layout.grid,
-        opacity = 1,
     }
 end
 
@@ -73,6 +71,13 @@ end
 local function setup_tags(screen)
     awful.tag({ "◯", "◯", "◯", "◯", "◯", "◯", "◯" }, screen, awful.layout.layouts[1])
 end
+
+local keybindings = require('keybindings')
+do
+   require'keybindings.client_navigation' 
+    require'keybindings.tag_navigation'
+end
+root.keys(keybindings.global_keys)
 
 return setmetatable({}, {
     __call = function (_, screen)

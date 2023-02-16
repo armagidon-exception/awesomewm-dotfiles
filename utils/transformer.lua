@@ -8,6 +8,10 @@ function class.of(input)
         end,
         get = function (self)
             return self.object
+        end,
+        use = function (self, action)
+            action(self.object)
+            return class.of(self.object)
         end
     }
     return setmetatable({}, {

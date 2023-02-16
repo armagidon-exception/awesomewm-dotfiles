@@ -40,21 +40,29 @@ local mount = function(widget)
                 widget = wibox.container.margin
             },
         },
-        shape = function (cr, width, height)
-            gs.rounded_bar(cr, width, height) 
-        end
+        shape = gs.rounded_bar,
     }
 end
 
-local calendar = transformer.of(wibox.widget.textclock('%d.%m.%Y')):map(mount):map(align_right):get()
+local calendar = transformer.of(wibox.widget.textclock('<span foreground="#5c90bd" font_size="12.5pt" font="Terminus"></span> %d.%m.%Y')):map(mount):map(align_right):get()
 local clock = transformer.of(wibox.widget.textclock('<span foreground="#5c90bd" font_size="12.5pt" font="Terminus"></span> %H:%M')):map(mount):map(align_right):get()
 local keyboardlayout = transformer.of(awful.widget.keyboardlayout()):map(mount):map(align_right):get()
+local systray = transformer.of(wibox.widget.systray()):use(function (widget)
+    widget:set_screen(awful.screen.focused())
+end):map(mount):map(align_right):get()
+
+local logo = transformer.of(wibox.widget.textbox('<span font_size="32pt"></span>')):map(function (widget)
+   return wibox.container.margin(widget, 6)
+end):get()
+local layoutbox = transformer.of(awful.widget.layoutbox()):map(mount):map(align_left):get()
 
 
-
-M.left = {
-    keyboardlayout,calendar,clock
+M.right = {
+    keyboardlayout, calendar, clock, systray
 }
 
+M.left = {
+    logo, layoutbox
+}
 
 return M
