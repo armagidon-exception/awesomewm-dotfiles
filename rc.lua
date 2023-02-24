@@ -3,11 +3,7 @@ pcall(require, "luarocks.loader")
 local gears = require("gears")
 local awful = require("awful")
 require("awful.autofocus")
-local wibox = require("wibox")
-local beautiful = require("beautiful")
 local naughty = require("naughty")
-local menubar = require("menubar")
-local hotkeys_popup = require("awful.hotkeys_popup")
 
 
 require("awful.hotkeys_popup.keys")
@@ -36,14 +32,17 @@ TERMNINAL = "alacritty"
 EDITOR = os.getenv("EDITOR") or "vim"
 EDITOR_CMD = TERMNINAL .. " -e " .. EDITOR
 MODKEY = "Mod4"
+BROWSER = 'firefox'
 
-awful.layout.layouts = {
-    awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-}
+tag.connect_signal("request::default_layouts",  function ()
+    awful.layout.append_default_layouts {
+        awful.layout.suit.tile,
+        awful.layout.suit.tile.left,
+        awful.layout.suit.tile.bottom,
+        awful.layout.suit.tile.top,
+        awful.layout.suit.floating,
+    }
+end)
 
 require('rules')
 require('theme_config')
@@ -51,3 +50,21 @@ require('theme_config')
 awful.screen.connect_for_each_screen(function (screen)
     require('desktop')(screen)
 end)
+
+local keybindings = require('keybindings')
+keybindings.export_global_keys()
+keybindings.export_client_keys()
+
+local mousebindings = require('mousebindings')
+mousebindings.export_global_mouse()
+mousebindings.export_client_mouse()
+
+
+
+gears.timer {
+       timeout = 30,
+       autostart = true,
+       callback = function() collectgarbage() end
+}
+
+awful.spawn.with_shell('sh ' .. gears.filesystem.get_configuration_dir() .. 'autostart.sh')

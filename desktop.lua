@@ -2,27 +2,14 @@
 local awful = require('awful')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
-local menubar = require('menubar')
 local gears = require('gears')
 local desktop_widgets = require('desktop_widgets')
+local wutils = require('utils.widget_utils')
 
 
-
-local place_widget =  function (type)
-    return function (widget)
-        return wibox.widget {
-            widget = wibox.container.place,
-            fill_vertical = true,
-            content_fill_vertical = true,
-            halign = type,
-            widget,
-        }
-    end
-end
-
-local center_widget = place_widget('center')
-local left_widget = place_widget('left')
-local right_widget = place_widget('right')
+local center = wutils.align_center_horizontally
+local left = wutils.align_left_horizontally
+local right = wutils.align_right_horizontally
 
 local function sub_bar(widgets)
     return wibox.widget {
@@ -37,16 +24,13 @@ end
 
 
 local function setup_wibar(screen)
-    local taglist = awful.widget.taglist {
-        screen = screen,
-        filter = awful.widget.taglist.filter.all,
-    }
+    local taglist = require('widgets.tasklist')(screen)
 
-    local topbar = awful.wibar { position = 'top', screen = screen, shape = gears.shape.rounded_bar}
+    local topbar = awful.wibar { position = 'top', screen = screen, shape = gears.shape.rounded_bar, ontop = true }
     topbar : setup {
-        left_widget(sub_bar(desktop_widgets.left)),
-        center_widget(taglist),
-        right_widget(sub_bar(desktop_widgets.right)),
+        left(sub_bar(desktop_widgets.left)),
+        center(taglist),
+        right(sub_bar(desktop_widgets.right)),
         expand = true,
         forced_num_cols = 3,
         homogeneous = true,
@@ -56,11 +40,25 @@ local function setup_wibar(screen)
 end
 
 
+
+local function setup_tags(screen)
+    awful.tag({ "◯", "◯", "◯", "◯", "◯", "◯", "◯" }, screen, awful.layout.layouts[1])
+end
+
+
+-- Setup general keys
+do
+    require'keybindings.client_navigation'
+    require'keybindings.tag_navigation'
+    require'keybindings.launchers'
+    require'keybindings.volume'
+end
+
+
+
 local function set_wallpaper(s)
-    -- Wallpaper
     if beautiful.wallpaper then
         local wallpaper = beautiful.wallpaper
-        -- If wallpaper is a function, call it with the screen
         if type(wallpaper) == "function" then
             wallpaper = wallpaper(s)
         end
@@ -68,16 +66,6 @@ local function set_wallpaper(s)
     end
 end
 
-local function setup_tags(screen)
-    awful.tag({ "◯", "◯", "◯", "◯", "◯", "◯", "◯" }, screen, awful.layout.layouts[1])
-end
-
-local keybindings = require('keybindings')
-do
-   require'keybindings.client_navigation' 
-    require'keybindings.tag_navigation'
-end
-root.keys(keybindings.global_keys)
 
 return setmetatable({}, {
     __call = function (_, screen)

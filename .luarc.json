@@ -2,5 +2,6 @@
     "workspace.library": [
         "/usr/share/awesome/lib/"
     ],
-    "runtime.pathStrict": true
+    "runtime.pathStrict": true,
+    "diagnostics.globals": ["client", "screen", "awesome", "root", "tag"]
 }

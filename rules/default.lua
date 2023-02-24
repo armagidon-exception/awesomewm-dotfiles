@@ -1,7 +1,9 @@
-local awful = require('awful')
 local beautiful = require('beautiful')
+local client_rules = require('ruled.client')
+local awful = require('awful')
 
-return {
+client_rules.append_rule({
+    id = 'global',
     rule = { },
     properties = {
         border_width = beautiful.border_width,
@@ -11,5 +13,5 @@ return {
         screen = awful.screen.preferred,
         placement = awful.placement.no_overlap + awful.placement.no_offscreen
     }
-}
+})
 

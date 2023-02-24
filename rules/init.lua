@@ -1,7 +1,6 @@
-local awful = require('awful')
-local table = require('gears.table')
+local client_rules = require('ruled.client')
 
-awful.rules.rules = table.join(
-    require('rules.default'),
+client_rules.connect_signal("request::rules", function ()
+    require('rules.default')
     require('rules.default_dialog')
-)
+end)

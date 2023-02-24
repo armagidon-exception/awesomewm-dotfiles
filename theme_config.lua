@@ -12,20 +12,12 @@ THEME_NAME = 'default'
 set_theme(THEME_NAME)
 
 
-screen.connect_signal("request::wallpaper", function(s)
-    awful.wallpaper {
-        screen = s,
-        widget = {
-            {
-                image     = beautiful.wallpaper,
-                upscale   = true,
-                downscale = true,
-                widget    = wibox.widget.imagebox,
-            },
-            valign = "center",
-            halign = "center",
-            tiled  = false,
-            widget = wibox.container.tile,
-        }
-    }
+client.connect_signal("focus", function (client)
+    client.border_color = beautiful.border_focus
+    client.border_width = beautiful.border_width
+end)
+
+client.connect_signal('unfocus', function (client)
+    client.border_color = beautiful.border_normal
+    client.border_width = beautiful.border_width
 end)

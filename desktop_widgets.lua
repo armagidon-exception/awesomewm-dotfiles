@@ -4,25 +4,12 @@ local awful = require('awful')
 local beautiful = require('beautiful')
 local gs  = require('gears.shape')
 local transformer = require('utils.transformer')
+local wutils = require('utils.widget_utils')
+
+local align_right = wutils.align_right_horizontally
+local align_left = wutils.align_left_horizontally
 
 
-
-local place_widget = function (type)
-    return function (widget)
-        return wibox.widget {
-            widget = wibox.container.place,
-            fill_vertical = true,
-            content_fill_vertical = true,
-            halign = type,
-            widget,
-        }
-    end
-end
-
-
-local align_center = place_widget('center')
-local align_left = place_widget('left')
-local align_right = place_widget('right')
 
 local mount = function(widget)
     return wibox.widget {
@@ -44,8 +31,8 @@ local mount = function(widget)
     }
 end
 
-local calendar = transformer.of(wibox.widget.textclock('<span foreground="#5c90bd" font_size="12.5pt" font="Terminus"></span> %d.%m.%Y')):map(mount):map(align_right):get()
-local clock = transformer.of(wibox.widget.textclock('<span foreground="#5c90bd" font_size="12.5pt" font="Terminus"></span> %H:%M')):map(mount):map(align_right):get()
+local calendar = transformer.of(''):map(beautiful.format_icon):map(wutils.concat_right(' %d.%m.%Y')):map(wutils.clock_from_text):map(mount):map(align_right):get()
+local clock = transformer.of(''):map(beautiful.format_icon):map(wutils.concat_right(' %H:%M')):map(wutils.clock_from_text):map(mount):map(align_right):get()
 local keyboardlayout = transformer.of(awful.widget.keyboardlayout()):map(mount):map(align_right):get()
 local systray = transformer.of(wibox.widget.systray()):use(function (widget)
     widget:set_screen(awful.screen.focused())
@@ -55,10 +42,12 @@ local logo = transformer.of(wibox.widget.textbox('<span font_size="32pt"></sp
    return wibox.container.margin(widget, 6)
 end):get()
 local layoutbox = transformer.of(awful.widget.layoutbox()):map(mount):map(align_left):get()
+local volume = transformer.of(require('widgets.volume').new()):map(mount):map(align_right):get()
+local packages  = transformer.of(require('widgets.packages').new()):map(mount):map(align_right):get()
 
 
 M.right = {
-    keyboardlayout, calendar, clock, systray
+    packages, keyboardlayout, volume, systray, calendar, clock
 }
 
 M.left = {
